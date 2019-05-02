@@ -46,49 +46,28 @@ class BooksApp extends Component {
   * @param {string} book - The book object bubbled from the Book Component
   */
   moveTheBook = (source, destination, book) => {
+    this.setState((currentState) => {
+      console.log(source, destination, book);
 
-    BooksAPI.update(book, destination)
-      .then(() => {
-        this.setState((currentState) => {
-          let foundBook = currentState.books.find((aBook) => { return aBook.id === book.id });
-          let indexOfFound = currentState.books.indexOf(foundBook);
-          if (destination === 'none') {
-            foundBook.shelf = 'none';
-            currentState.books = currentState.books.filter((book) => book.id !== foundBook.id);
-          } else {
-            foundBook.shelf = destination; // change it!!!
-            currentState.books[indexOfFound] = foundBook;
-            
-          }
+      let foundBook = currentState.books.find((aBook) => { return aBook.id === book.id });
+      let indexOfFound = currentState.books.indexOf(foundBook);
+      if (destination === 'none') {
+        //foundBook.shelf = undefined;
+        foundBook.shelf = 'none';
+        currentState.books = currentState.books.filter((book) => book.id !== foundBook.id);
+      } else {
+        foundBook.shelf = destination; // change it!!!
+        currentState.books[indexOfFound] = foundBook;
+      }
+      BooksAPI.update(book, destination)
+        .then((updated) => {
+          console.log(currentState, updated);
           return currentState;
-        });
-      })
-      .catch(
-        e => this.setState({
-          errMessage: "Could't update the bookshelf, please try after sometime.",
-        })
-      );
+        }).catch(
+          e => this.setState({ errMessage: "Could't update the bookshelf, please try after sometime." })
+        );
 
-
-    // this.setState((currentState) => {
-    //   let foundBook = currentState.books.find((aBook) => { return aBook.id === book.id });
-    //   let indexOfFound = currentState.books.indexOf(foundBook);
-    //   if (destination === 'none') {
-    //     //foundBook.shelf = undefined;
-    //     foundBook.shelf = 'none';
-    //     currentState.books = currentState.books.filter((book) => book.id !== foundBook.id);
-    //   } else {
-    //     foundBook.shelf = destination; // change it!!!
-    //     currentState.books[indexOfFound] = foundBook;
-    //     console.log(JSON.stringify(foundBook));
-    //   }
-    //   BooksAPI.update(book, destination)
-    //     .then((updated) => {
-    //       console.log('API---> ' + JSON.stringify(currentState));
-    //       return currentState;
-    //     }).catch(e => this.setState({ errMessage: "Could't update the bookshelf, please try after sometime." }));
-
-    // });
+    });
 
   }
 
